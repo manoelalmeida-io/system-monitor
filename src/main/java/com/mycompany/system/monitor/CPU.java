@@ -4,16 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
+import oshi.hardware.CentralProcessor.TickType;
 import oshi.hardware.HardwareAbstractionLayer;
 
 public class CPU {
 
     private CentralProcessor cpu;
+    private long oldTicks[];
     
     public CPU() {
         SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
         this.cpu = hal.getProcessor();
+        
+        oldTicks = new long[TickType.values().length];
     }
     
     public List<Double> getCurrentFrequency() {
@@ -27,14 +31,8 @@ public class CPU {
     }
     
     public Double getCurrentPercent() {
-        Long sum = 0L;
-        Long sumMax = 0L;
-        
-        for (Long freq : cpu.getCurrentFreq()) {
-            sum += freq;
-            sumMax += cpu.getMaxFreq();
-        }
-        
-        return (sum * 100.0) / sumMax;
+        double d = cpu.getSystemCpuLoadBetweenTicks(oldTicks);
+        oldTicks = cpu.getSystemCpuLoadTicks();
+        return d * 100.0;
     }
 }

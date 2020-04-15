@@ -44,10 +44,12 @@ public class Main extends javax.swing.JFrame {
             lblTotalSpaceDisk0.setText(String.format("%.2fGB", file.getTotalSpace() / Math.pow(10, 9)));
             lblFreeSpaceDisk0.setText(String.format("%.2fGB", file.getFreeSpace() / Math.pow(10, 9)));
 
-            File file1 = new File(mountPoints.get(1));
-            lblMountPointDisk1.setText(mountPoints.get(1));
-            lblTotalSpaceDisk1.setText(String.format("%.2fGB", file1.getTotalSpace() / Math.pow(10, 9)));
-            lblFreeSpaceDisk1.setText(String.format("%.2fGB", file1.getFreeSpace() / Math.pow(10, 9)));
+            if (mountPoints.size() > 1) {
+                File file1 = new File(mountPoints.get(1));
+                lblMountPointDisk1.setText(mountPoints.get(1));
+                lblTotalSpaceDisk1.setText(String.format("%.2fGB", file1.getTotalSpace() / Math.pow(10, 9)));
+                lblFreeSpaceDisk1.setText(String.format("%.2fGB", file1.getFreeSpace() / Math.pow(10, 9)));
+            }
         };
         
         Timer timer = new Timer(1000, action);
