@@ -1,4 +1,4 @@
-package com.mycompany.system.monitor;
+package com.mycompany.system.monitor.api;
 
 import oshi.SystemInfo;
 import oshi.hardware.GlobalMemory;
