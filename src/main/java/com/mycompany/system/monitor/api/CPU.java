@@ -1,7 +1,5 @@
 package com.mycompany.system.monitor.api;
 
-import java.util.ArrayList;
-import java.util.List;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.CentralProcessor.TickType;

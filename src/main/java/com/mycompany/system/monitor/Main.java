@@ -3,12 +3,10 @@ package com.mycompany.system.monitor;
 import com.mycompany.system.monitor.api.CPU;
 import com.mycompany.system.monitor.api.Disk;
 import com.mycompany.system.monitor.api.RAM;
-import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.List;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.Timer;
 
 public class Main extends javax.swing.JFrame {
@@ -23,8 +21,8 @@ public class Main extends javax.swing.JFrame {
     public Main() {
         initComponents();
         
-        List<String> mountPoints = disk.getDiskPaths();
-        
+        pnlDisks.add(new JLabel("asdf"));
+        pnlDisks.revalidate();
         
         ActionListener action = (ActionEvent actionEvent) -> {
             lblCPU.setText(String.format("%.2fGhz", cpu.getCurrentFrequency()));
@@ -35,16 +33,16 @@ public class Main extends javax.swing.JFrame {
             lblRAM1.setText(String.format("%.2fGB", ram.getAvailableMemory()));
             lblRAMPercent.setText(String.format("%.1f%%", ram.getCurrentPercent()));
             
-            File file = new File(mountPoints.get(0));
-            lblMountPointDisk0.setText(mountPoints.get(0));
-            lblTotalSpaceDisk0.setText(String.format("%.2fGB", file.getTotalSpace() / Math.pow(10, 9)));
-            lblFreeSpaceDisk0.setText(String.format("%.2fGB", file.getFreeSpace() / Math.pow(10, 9)));
+            lblNameDisk0.setText(disk.getName(0));
+            lblTotalSpaceDisk0.setText(String.format("%.2fGB", disk.getDiskSize(0)));
+            lblFreeSpaceDisk0.setText(String.format("%.2fGB", disk.getFreeSize(0)));
+            pgbUsageDisk0.setValue(disk.getDiskPercent(0));
 
-            if (mountPoints.size() > 1) {
-                File file1 = new File(mountPoints.get(1));
-                lblMountPointDisk1.setText(mountPoints.get(1));
-                lblTotalSpaceDisk1.setText(String.format("%.2fGB", file1.getTotalSpace() / Math.pow(10, 9)));
-                lblFreeSpaceDisk1.setText(String.format("%.2fGB", file1.getFreeSpace() / Math.pow(10, 9)));
+            if (disk.getDiskCount() > 1) {
+                lblNameDisk1.setText(disk.getName(1));
+                lblTotalSpaceDisk1.setText(String.format("%.2fGB", disk.getDiskSize(1)));
+                lblFreeSpaceDisk1.setText(String.format("%.2fGB", disk.getFreeSize(1)));
+                pgbUsageDisk1.setValue(disk.getDiskPercent(1));
             }
         };
         
@@ -77,23 +75,27 @@ public class Main extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JSeparator();
         lblRAMPercent = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
+        btnInfo = new javax.swing.JButton();
+        btnProcesses = new javax.swing.JButton();
+        pnlDisks = new javax.swing.JPanel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        lblTotalSpaceDisk1 = new javax.swing.JLabel();
+        lblFreeSpaceDisk1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         lblTotalSpaceDisk0 = new javax.swing.JLabel();
         lblFreeSpaceDisk0 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        lblTotalSpaceDisk1 = new javax.swing.JLabel();
-        lblFreeSpaceDisk1 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        lblMountPointDisk1 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        lblMountPointDisk0 = new javax.swing.JLabel();
-        btnInfo = new javax.swing.JButton();
-        btnProcesses = new javax.swing.JButton();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        lblNameDisk0 = new javax.swing.JLabel();
+        lblNameDisk1 = new javax.swing.JLabel();
+        pgbUsageDisk1 = new javax.swing.JProgressBar();
+        pgbUsageDisk0 = new javax.swing.JProgressBar();
+        jSeparator4 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -164,18 +166,19 @@ public class Main extends javax.swing.JFrame {
 
         jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
-        jLabel4.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
-        jLabel4.setText("Disks");
+        btnInfo.setText("System Info");
+        btnInfo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInfoActionPerformed(evt);
+            }
+        });
 
-        jLabel6.setText("Disk 0");
-
-        jLabel7.setText("Total space:");
-
-        jLabel8.setText("Free space:");
-
-        lblTotalSpaceDisk0.setText("0");
-
-        lblFreeSpaceDisk0.setText("0");
+        btnProcesses.setText("Processes");
+        btnProcesses.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProcessesActionPerformed(evt);
+            }
+        });
 
         jLabel11.setText("Disk 1");
 
@@ -187,96 +190,150 @@ public class Main extends javax.swing.JFrame {
 
         lblFreeSpaceDisk1.setText("0");
 
-        jLabel9.setText("Mount point: ");
+        jLabel4.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
+        jLabel4.setText("DISKS");
 
-        lblMountPointDisk1.setText("\\");
+        jLabel6.setText("Disk 0");
 
-            jLabel14.setText("Mount point:");
+        jLabel7.setText("Total space:");
 
-            lblMountPointDisk0.setText("\\");
+        jLabel8.setText("Free space:");
 
-                btnInfo.setText("System Info");
-                btnInfo.addActionListener(new java.awt.event.ActionListener() {
-                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        btnInfoActionPerformed(evt);
-                    }
-                });
+        lblTotalSpaceDisk0.setText("0");
 
-                btnProcesses.setText("Processes");
-                btnProcesses.addActionListener(new java.awt.event.ActionListener() {
-                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        btnProcessesActionPerformed(evt);
-                    }
-                });
+        lblFreeSpaceDisk0.setText("0");
 
-                javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-                getContentPane().setLayout(layout);
-                layout.setHorizontalGroup(
-                    layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        jLabel16.setText("Nome:");
+
+        jLabel17.setText("Nome:");
+
+        lblNameDisk0.setText(":");
+
+        lblNameDisk1.setText(":");
+
+        javax.swing.GroupLayout pnlDisksLayout = new javax.swing.GroupLayout(pnlDisks);
+        pnlDisks.setLayout(pnlDisksLayout);
+        pnlDisksLayout.setHorizontalGroup(
+            pnlDisksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlDisksLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlDisksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator4)
+                    .addComponent(pgbUsageDisk1, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel6)
+                    .addGroup(pnlDisksLayout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblTotalSpaceDisk0))
+                    .addGroup(pnlDisksLayout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblFreeSpaceDisk0))
+                    .addComponent(jLabel11)
+                    .addGroup(pnlDisksLayout.createSequentialGroup()
+                        .addComponent(jLabel12)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblTotalSpaceDisk1))
+                    .addGroup(pnlDisksLayout.createSequentialGroup()
+                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblFreeSpaceDisk1))
+                    .addGroup(pnlDisksLayout.createSequentialGroup()
+                        .addComponent(jLabel16)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblNameDisk0))
+                    .addGroup(pnlDisksLayout.createSequentialGroup()
+                        .addComponent(jLabel17)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblNameDisk1))
+                    .addComponent(pgbUsageDisk0, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        pnlDisksLayout.setVerticalGroup(
+            pnlDisksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlDisksLayout.createSequentialGroup()
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlDisksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel16)
+                    .addComponent(lblNameDisk0))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlDisksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(lblTotalSpaceDisk0))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlDisksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(lblFreeSpaceDisk0))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pgbUsageDisk0, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlDisksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel17)
+                    .addComponent(lblNameDisk1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlDisksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel12)
+                    .addComponent(lblTotalSpaceDisk1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlDisksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(lblFreeSpaceDisk1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pgbUsageDisk1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(cpuFreqPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addContainerGap()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel1)
-                                            .addComponent(jLabel2)
-                                            .addComponent(jLabel3)
-                                            .addComponent(lblRAM)
-                                            .addComponent(jLabel5)
-                                            .addComponent(lblRAM1))))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jSeparator2)
-                                    .addComponent(jSeparator1))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblCPUPercent)
-                                    .addComponent(lblRAMPercent))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel6)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel7)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lblTotalSpaceDisk0))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel8)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lblFreeSpaceDisk0))
-                                    .addComponent(jLabel11)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel12)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lblTotalSpaceDisk1))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel13)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lblFreeSpaceDisk1))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel9)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lblMountPointDisk1))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel14)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lblMountPointDisk0))))
+                            .addComponent(cpuFreqPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(btnInfo)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnProcesses)))
-                        .addContainerGap(106, Short.MAX_VALUE))
-                );
-                layout.setVerticalGroup(
-                    layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3)
+                                    .addComponent(lblRAM)
+                                    .addComponent(jLabel5)
+                                    .addComponent(lblRAM1))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jSeparator2)
+                            .addComponent(jSeparator1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblCPUPercent)
+                            .addComponent(lblRAMPercent))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
+                        .addComponent(btnInfo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnProcesses)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pnlDisks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlDisks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator3)
                             .addGroup(layout.createSequentialGroup()
@@ -303,47 +360,16 @@ public class Main extends javax.swing.JFrame {
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                             .addComponent(lblRAM1))
                                         .addComponent(jSeparator2))
-                                    .addComponent(lblRAMPercent)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel7)
-                                    .addComponent(lblTotalSpaceDisk0))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel8)
-                                    .addComponent(lblFreeSpaceDisk0))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel14)
-                                    .addComponent(lblMountPointDisk0))
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel11)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel12)
-                                    .addComponent(lblTotalSpaceDisk1))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel13)
-                                    .addComponent(lblFreeSpaceDisk1))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel9)
-                                    .addComponent(lblMountPointDisk1))
-                                .addGap(0, 0, Short.MAX_VALUE)))
+                                    .addComponent(lblRAMPercent))))
                         .addGap(27, 27, 27)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnInfo)
-                            .addComponent(btnProcesses))
-                        .addContainerGap())
-                );
+                            .addComponent(btnProcesses))))
+                .addContainerGap())
+        );
 
-                pack();
-            }// </editor-fold>//GEN-END:initComponents
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
 
     private void btnInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInfoActionPerformed
         JFrame frame = new JFrame();
@@ -404,8 +430,9 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -413,21 +440,24 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JLabel lblCPU;
     private javax.swing.JLabel lblCPU1;
     private javax.swing.JLabel lblCPUPercent;
     private javax.swing.JLabel lblFreeSpaceDisk0;
     private javax.swing.JLabel lblFreeSpaceDisk1;
-    private javax.swing.JLabel lblMountPointDisk0;
-    private javax.swing.JLabel lblMountPointDisk1;
+    private javax.swing.JLabel lblNameDisk0;
+    private javax.swing.JLabel lblNameDisk1;
     private javax.swing.JLabel lblRAM;
     private javax.swing.JLabel lblRAM1;
     private javax.swing.JLabel lblRAMPercent;
     private javax.swing.JLabel lblTotalSpaceDisk0;
     private javax.swing.JLabel lblTotalSpaceDisk1;
+    private javax.swing.JProgressBar pgbUsageDisk0;
+    private javax.swing.JProgressBar pgbUsageDisk1;
+    private javax.swing.JPanel pnlDisks;
     // End of variables declaration//GEN-END:variables
 }
